@@ -35,20 +35,19 @@ MAINTAINER Chung Tran <chung.k.tran@gmail.com>
 
 COPY --from=builder /var/cache/elasticsearch.deb /var/cache/elasticsearch.deb
 
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV ES_CONFIG /etc/elasticsearch/elasticsearch.yml
+
 RUN apt-get update && apt-get install -y openjdk-8-jdk && \
     dpkg -i /var/cache/elasticsearch.deb && \
-    apt-get clean
-RUN sysctl -w vm.max_map_count=262144
-
-ENV ES_CONFIG /etc/elasticsearch/elasticsearch.yml
-RUN echo 'network.host: 0.0.0.0' >> $ES_CONFIG && \
+    apt-get clean && \
+    echo 'network.host: 0.0.0.0' >> $ES_CONFIG && \
     echo 'discovery.type: single-node' >> $ES_CONFIG
 
 EXPOSE 9200 9300
 
 USER elasticsearch
 
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 CMD ["/usr/share/elasticsearch/bin/elasticsearch"]
 
